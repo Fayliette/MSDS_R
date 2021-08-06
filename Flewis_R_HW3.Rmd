@@ -1,0 +1,59 @@
+---
+title: "FLewis_R_HW3"
+author: "Fayliette Lewis"
+date: "8/6/2021"
+output: html_document
+---
+
+#
+1. **Which borough in New York has the highest number of shootings?**
+2. **Which race has been shot the most?**
+
+```{r}
+
+library(readr)
+library("dplyr") 
+library(ggplot2)
+
+# data set GitHub url
+ghub_url <- "https://raw.githubusercontent.com/Fayliette/MSDS_R/main/NYPD_Shooting_Incident_Data__Historic_.csv"
+
+# Load data set 
+df <- read.csv(ghub_url, stringsAsFactors = FALSE)
+
+# Display the first 6 rows of the data set
+head(df)
+
+# Get the  overview of the data set
+summary(df)
+
+# Get the total shootings in each borough
+boro_shootings <- table(df$BORO)
+boro_shootings 
+# bar graph of the shootings in each borough
+ggplot(data = as.data.frame(df), aes(x = BORO)) + geom_bar() +  xlab("BOROUGHS") +
+  ylab("SHOOTINGS") +
+  ggtitle("NYC SHOOTINGS")
+
+# Get the total number of times each race has been shot
+vic_race <- table(df$VIC_RACE)
+vic_race
+# Display the mean and median of the latitude and longitude
+summarize(df, mean_lat = mean(Latitude, na.rm=TRUE), median_lat = median(Latitude, na.rm=TRUE),
+          mean_long = mean(Longitude, na.rm=TRUE), median_long = median(Longitude, na.rm=TRUE))
+
+# Create a copy of the  data frame and replace all the empty values in the PERP_SEX column to "U" for unknown 
+# and the empty values in the PERP_RACE column to "UNKNOWN" in the new data frame
+new_df <- df
+new_df["PERP_SEX"][new_df["PERP_SEX"] == ""] <- "U"
+new_df["PERP_RACE"][new_df["PERP_RACE"] == ""] <- "UNKNOWN"
+head(new_df)
+
+# Create a Subset with the BORO, PERP_SEX, PERP_RACE, VIC_SEX, AND VIC_RACE from the borough Brooklyn
+#subset(education, Region == 2, select = c("State","Minor.Population","Education.Expenditures"))
+brklyn_df <- subset(new_df, BORO == "BROOKLYN", select = c("BORO", "PERP_SEX", "PERP_RACE", "VIC_SEX", "VIC_RACE"))
+head(brklyn_df)
+
+```
+**Based on my analysis, There has been more shootings in Brooklyn than any other borough in NYC. Of all the shootings in NYC most of the victims were part of the black race. This information can be used when the NYC government and authorities are looking for ways to decrease shootings in the Boroughs. More attention and resources need to be applied to Brooklyn to help decrease the rate of shootings in the city.**
+
